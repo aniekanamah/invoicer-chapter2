@@ -7,12 +7,12 @@ jobs:
   docker:
    - image: circleci/golang:1.10
   steps:
-   - checkout
-   - setup_remote_docker
+    - checkout
+    - setup_remote_docker
 
-   - run: 
-      name: Setup environment
-      command: |
+    - run: 
+        name: Setup environment
+        command: |
        gb="/src/github.com/${CIRCLE_PROJECT_USERNAME}";
        if [ ${CIRCLE_PROJECT_USERNAME} == 'Securing-DevOps' ]; then
          dr="securingdevops"
@@ -24,10 +24,10 @@ jobs:
        export GOPATH_BASE="$(echo ${GOPATH}|cut -d ':' -f 1)${gb}"
        export DOCKER_REPO="$dr"
        EOF
-   - run: mkdir -p "${GOPATH_BASE}"
-   - run: mkdir -p "${GOPATH_HEAD}/bin"
+    - run: mkdir -p "${GOPATH_BASE}"
+    - run: mkdir -p "${GOPATH_HEAD}/bin"
        
-   - run:
+    - run:
         name: Build application container
         command: |
             go install --ldflags '-extldflags "-static"' github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME};
@@ -56,8 +56,8 @@ jobs:
         name: Test dependencies are up to date
         command: 'GOPATH="${GOPATH_HEAD}"; ( cd ${GOPATH_BASE}/${CIRCLE_PROJECT_REPONAME} && govend -u --prune && git diff --quiet )'
 
-   - deploy:
-       command: |
+    - deploy:
+        command: |
          if [ "${CIRCLE_BRANCH}" == "master" ]; then
            docker login -u ${DOCKER_USER} -p ${DOCKER_PASS};
            go install --ldflags '-extldflags "-static"' \
